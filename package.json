@@ -1,0 +1,21 @@
+{
+  "name": "robosoccer-scorer",
+  "version": "1.0.0",
+  "description": "Scoreboard and knockout manager for school robot football events. Runs offline from a single HTML file.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "author": "Aryamman Ojha",
+  "scripts": {
+    "dev": "node scripts/build.mjs --serve",
+    "build": "node scripts/build.mjs",
+    "test": "node --test",
+    "verify": "node tools/verify-draw.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.21.5"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
