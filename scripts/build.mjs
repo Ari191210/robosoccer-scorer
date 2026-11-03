@@ -48,7 +48,7 @@ if (process.argv.includes('--serve')) {
   // The website: the story page at the root, the scorer at scorer/, and the
   // same single file offered as a download. Links are relative so it works on
   // GitHub Pages (under /robosoccer-scorer/) and on Vercel (at /).
-  const site = process.env.SITE_URL ?? 'https://ari191210.github.io/robosoccer-scorer/';
+  const site = process.env.SITE_URL ?? 'https://robosoccer-scorer.vercel.app/';
   await rm(at('site'), { recursive: true, force: true });
   await mkdir(at('site/scorer'), { recursive: true });
   await mkdir(at('site/img'), { recursive: true });

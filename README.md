@@ -2,7 +2,7 @@
 
 Scoreboard and knockout manager for school robot football. I built it to run the RoboSoccer event at **Robotics at Exun 2026** (DPS R.K. Puram, 31 October 2026), hosted by RoboKnights, and used it on the day on a laptop mirrored to the hall projector.
 
-**See it:** https://ari191210.github.io/robosoccer-scorer/ (the story), or jump straight into [a sample tournament mid-match](https://ari191210.github.io/robosoccer-scorer/scorer/?demo). The demo is kept in memory only, so it never touches a real tournament saved in the same browser.
+**See it:** https://robosoccer-scorer.vercel.app (the story), or jump straight into [a sample tournament mid-match](https://robosoccer-scorer.vercel.app/scorer/?demo). Also mirrored on [GitHub Pages](https://ari191210.github.io/robosoccer-scorer/). The demo is kept in memory only, so it never touches a real tournament saved in the same browser.
 
 ![The match screen during a quarter-final](docs/screenshots/match.png)
 
