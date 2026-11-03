@@ -2,6 +2,7 @@ import { countdown, remaining, zeroAt } from './clock.js';
 import { champion, makeDraw as buildDraw, newDrawCode, normaliseCode } from './draw.js';
 import { resultsCsv } from './export.js';
 import { PLAYING } from './match.js';
+import { demoEvents } from './demo.js';
 import { createStore } from './store.js';
 import { confetti, sound, unlockAudio } from './ui/effects.js';
 import { MAX_TEAMS, MIN_TEAMS, transientKey, view } from './ui/views.js';
@@ -20,7 +21,16 @@ function browserStorage() {
   }
 }
 
-const store = createStore({ storage: browserStorage(), key: 'robosoccer-scorer' });
+// ?demo opens a sample tournament kept in memory only, so it can never
+// overwrite a real tournament saved in this browser.
+const DEMO = new URLSearchParams(location.search).has('demo');
+const store = createStore({ storage: DEMO ? null : browserStorage(), key: 'robosoccer-scorer' });
+if (DEMO) {
+  for (const ev of demoEvents()) store.dispatch(ev);
+  const note = Object.assign(document.createElement('p'), { className: 'demo-note' });
+  note.innerHTML = 'Sample tournament. Try anything, nothing is saved. <a href="./">Start your own</a>';
+  document.body.prepend(note);
+}
 const ui = { tab: store.setup.tab ?? 'match', confirm: null, declare: false, editing: false, code: '', drawError: '', dataError: '' };
 const app = document.getElementById('app');
 const canvas = document.getElementById('fx');
