@@ -2,7 +2,7 @@
 
 Scoreboard and knockout manager for school robot football. I built it to run the RoboSoccer event at **Robotics at Exun 2026** (DPS R.K. Puram, 31 October 2026), hosted by RoboKnights, and used it on the day on a laptop mirrored to the hall projector.
 
-**Try it:** https://ari191210.github.io/robosoccer-scorer/
+**See it:** https://ari191210.github.io/robosoccer-scorer/ (the story), or jump straight into [a sample tournament mid-match](https://ari191210.github.io/robosoccer-scorer/scorer/?demo). The demo is kept in memory only, so it never touches a real tournament saved in the same browser.
 
 ![The match screen during a quarter-final](docs/screenshots/match.png)
 
@@ -47,11 +47,11 @@ The clock writes its own `timeUp` event at the exact moment a half ends, so repl
 
 ### 3. One file, no internet
 
-School Wi-Fi in a hall full of robots and phones cannot be trusted. `npm run build` inlines the code, styles, fonts and logo into `dist/robosoccer.html`, about 260 KB, which runs from a USB stick. The live version is the same file, so saving that page also gives a working offline copy.
+School Wi-Fi in a hall full of robots and phones cannot be trusted. `npm run build` inlines the code, styles, fonts and logo into `dist/robosoccer.html`, about 260 KB, which runs from a USB stick. The scorer on the website (`/scorer/`) is the same file, so saving that page also gives a working offline copy, and the site offers it as a download.
 
 ## Using it on the day
 
-1. Open the app in Chrome on the scoring laptop, mirror the laptop to the projector and press F11.
+1. Open the scorer (`/scorer/` on the website, or `dist/robosoccer.html`) in Chrome on the scoring laptop, mirror the laptop to the projector and press F11.
 2. **Fixtures:** set the number of teams and type or paste the names (one per line fills the boxes). Press **Make fixtures**. Match 1 loads in the scorer.
 3. **Match:** press **Start match** on the referee's whistle, then **+ Goal** for each goal. Everything else is on the centre button. Team names can be corrected at any time by clicking them.
 4. After each round, **Save backup**.
@@ -62,9 +62,9 @@ Needs Node 20 or later.
 
 ```
 npm install
-npm test          # 22 tests: the draw, the match rules, full tournaments, backups
+npm test          # 23 tests: the draw, the match rules, full tournaments, backups, the demo
 npm run dev       # serves the source at http://localhost:8080
-npm run build     # writes dist/robosoccer.html
+npm run build     # writes dist/robosoccer.html and the website in site/
 ```
 
 ```
@@ -76,10 +76,12 @@ src/
   tournament.js   applies events to the whole tournament; replay
   store.js        event list, undo, saving, backups
   export.js       results as CSV
+  demo.js         the sample tournament behind ?demo
   main.js         wiring: clicks, keys, the clock tick
   ui/views.js     HTML for each part of the screen
   ui/effects.js   sound and confetti
-scripts/build.mjs single-file build and dev server
+scripts/build.mjs single-file build, website and dev server
+web/              the story page at the root of the website
 tools/verify-draw.mjs
 test/             node:test suites
 ```

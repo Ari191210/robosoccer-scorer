@@ -1,11 +1,11 @@
 // Builds dist/robosoccer.html: the whole app (code, styles, fonts, logo) in
 // one file that runs offline from a USB stick or a laptop with no internet.
 //
-//   npm run build          write dist/robosoccer.html
+//   npm run build          write dist/robosoccer.html and the website in site/
 //   npm run dev            serve the source folder at http://localhost:8080
 
 import { context, build } from 'esbuild';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -44,4 +44,19 @@ if (process.argv.includes('--serve')) {
   await mkdir(at('dist'), { recursive: true });
   await writeFile(at('dist/robosoccer.html'), html);
   console.log(`dist/robosoccer.html  ${(html.length / 1024).toFixed(0)} KB`);
+
+  // The website: the story page at the root, the scorer at scorer/, and the
+  // same single file offered as a download. Links are relative so it works on
+  // GitHub Pages (under /robosoccer-scorer/) and on Vercel (at /).
+  const site = process.env.SITE_URL ?? 'https://ari191210.github.io/robosoccer-scorer/';
+  await rm(at('site'), { recursive: true, force: true });
+  await mkdir(at('site/scorer'), { recursive: true });
+  await mkdir(at('site/img'), { recursive: true });
+  await writeFile(at('site/scorer/index.html'), html);
+  await writeFile(at('site/robosoccer.html'), html);
+  await writeFile(at('site/index.html'), (await readFile(at('web/index.html'), 'utf8')).replaceAll('%SITE_URL%', site));
+  await cp(at('web/icon.svg'), at('site/img/icon.svg'));
+  await cp(at('docs/screenshots'), at('site/img'), { recursive: true });
+  await cp(at('assets/fonts'), at('site/fonts'), { recursive: true });
+  console.log(`site/                 story page, scorer/, robosoccer.html`);
 }

@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RoboSoccer Scorer · Aryamman Ojha</title>
+<meta name="description" content="The scoreboard and knockout manager I built to run RoboSoccer at Robotics at Exun 2026. A draw anyone can check, undo for every action, and one HTML file that runs offline.">
+<meta name="author" content="Aryamman Ojha">
+<meta name="theme-color" content="#0b0c0e">
+<meta property="og:type" content="website">
+<meta property="og:title" content="RoboSoccer Scorer">
+<meta property="og:description" content="The scoreboard and knockout manager I built to run RoboSoccer at Robotics at Exun 2026.">
+<meta property="og:image" content="%SITE_URL%img/match.png">
+<meta property="og:url" content="%SITE_URL%">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="%SITE_URL%">
+<link rel="icon" href="img/icon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/big-shoulders-display-latin-900-normal.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:'Big Shoulders Display';font-weight:700;font-display:swap;src:url('fonts/big-shoulders-display-latin-700-normal.woff2') format('woff2')}
+@font-face{font-family:'Big Shoulders Display';font-weight:900;font-display:swap;src:url('fonts/big-shoulders-display-latin-900-normal.woff2') format('woff2')}
+@font-face{font-family:'Barlow';font-weight:500;font-display:swap;src:url('fonts/barlow-latin-500-normal.woff2') format('woff2')}
+@font-face{font-family:'Barlow';font-weight:600;font-display:swap;src:url('fonts/barlow-latin-600-normal.woff2') format('woff2')}
+@font-face{font-family:'Barlow';font-weight:700;font-display:swap;src:url('fonts/barlow-latin-700-normal.woff2') format('woff2')}
+@font-face{font-family:'Barlow';font-weight:800;font-display:swap;src:url('fonts/barlow-latin-800-normal.woff2') format('woff2')}
+
+:root{
+  --bg:#0b0c0e;--panel:#16171a;--panel-hi:#1d1f23;--line:#2c2e33;--line-hi:#4a4d54;
+  --grid:rgba(243,242,238,.022);--text:#f3f2ee;--soft:#c9c8c3;--muted:#8e9096;
+  --paper:#f6f5f1;--paper-lo:#e2e1db;--ink:#0b0b0c;--signal:#ff4a3d;
+  --f-num:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --f-body:"Barlow","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --lift:0 1px 0 rgba(255,255,255,.045) inset,0 26px 50px -30px rgba(0,0,0,.95);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{margin:0;background:var(--bg);color:var(--text)}
+body{font:500 18px/1.6 var(--f-body);-webkit-font-smoothing:antialiased;
+  background:
+    radial-gradient(1100px 520px at 50% -12%,#1c1e23 0%,transparent 62%),
+    linear-gradient(var(--grid) 1px,transparent 1px) 0 0/48px 48px,
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/48px 48px,
+    var(--bg)}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--signal);outline-offset:3px}
+img{display:block;max-width:100%;height:auto}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:max(20px,env(safe-area-inset-left,0px))}
+.narrow{max-width:720px}
+
+/* top */
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:22px}
+.top .name{font:800 15px/1 var(--f-body);letter-spacing:.06em;text-transform:uppercase;text-decoration:none}
+.top nav{display:flex;gap:22px;font-size:15px;font-weight:600;color:var(--muted)}
+.top nav a{text-decoration:none}
+.top nav a:hover{color:var(--text)}
+
+/* hero */
+.hero{padding-block:64px 40px}
+.eyebrow{display:flex;align-items:center;gap:10px;margin:0 0 22px;color:var(--muted);font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+.eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--signal);flex:none}
+h1{margin:0;font:900 clamp(64px,11vw,148px)/.86 var(--f-num);text-transform:uppercase;letter-spacing:-.005em}
+.lede{max-width:640px;margin:28px 0 0;color:var(--soft);font-size:clamp(19px,2.2vw,22px);line-height:1.5}
+.lede strong{color:var(--text);font-weight:700}
+.ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:36px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 24px;border-radius:12px;font:700 17px/1 var(--f-body);text-decoration:none;border:1px solid var(--line-hi);background:var(--panel);box-shadow:var(--lift);transition:background .15s,transform .1s}
+.btn:hover{background:var(--panel-hi)}
+.btn:active{transform:translateY(1px)}
+.btn.main{background:var(--paper) linear-gradient(180deg,#fff,var(--paper-lo));color:var(--ink);border-color:transparent}
+.btn.main:hover{background:var(--paper)}
+.hint{margin:14px 0 0;color:var(--muted);font-size:15px}
+
+.shot{margin:56px 0 0;border-radius:18px;overflow:hidden;border:1px solid var(--line);box-shadow:0 40px 80px -40px rgba(0,0,0,.9)}
+.cap{margin:12px 2px 0;color:var(--muted);font-size:14px}
+
+/* facts */
+.facts{display:grid;grid-template-columns:repeat(4,1fr);margin-top:72px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.fact{padding:26px 22px 24px 0}
+.fact+.fact{padding-left:22px;border-left:1px solid var(--line)}
+.fact b{display:block;font:900 clamp(40px,5vw,56px)/1 var(--f-num);font-variant-numeric:tabular-nums}
+.fact span{display:block;margin-top:8px;color:var(--muted);font-size:14px;font-weight:600;line-height:1.35}
+
+/* sections */
+section{padding-block:96px 0}
+.label{margin:0 0 14px;color:var(--muted);font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+h2{margin:0;font:900 clamp(40px,6vw,64px)/.95 var(--f-num);text-transform:uppercase}
+h3{margin:0;font:700 clamp(30px,3.6vw,38px)/1 var(--f-num);text-transform:uppercase}
+p{margin:18px 0 0}
+.body p{color:var(--soft)}
+.body strong{color:var(--text)}
+
+.decision{display:grid;grid-template-columns:72px 1fr minmax(0,400px);gap:28px;align-items:start;padding:44px 0;border-top:1px solid var(--line)}
+.decision:first-of-type{margin-top:44px}
+.num{font:900 56px/.8 var(--f-num);color:#6b6e75}
+.decision .body p:first-of-type{margin-top:14px}
+.demo{border-radius:14px;background:var(--panel);border:1px solid var(--line);box-shadow:var(--lift);padding:20px;font-size:15px}
+.mono{font:700 15px/1.6 ui-monospace,"Cascadia Mono",Consolas,monospace}
+.code{display:inline-block;padding:6px 12px;border-radius:8px;background:var(--bg);border:1px solid var(--line-hi);letter-spacing:.14em}
+.demo .k{color:var(--muted);font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.demo ol{margin:0;padding:0;list-style:none}
+.demo li{display:grid;grid-template-columns:62px 1fr;gap:10px;padding:7px 0;border-top:1px solid var(--line)}
+.demo li:first-child{border-top:0}
+.demo li time{color:var(--muted)}
+.demo li.undo{color:var(--muted);text-decoration:line-through}
+.size{font:900 72px/1 var(--f-num)}
+
+.wide{margin-top:44px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:40px 0 0;padding:0;list-style:none;counter-reset:s}
+.steps li{padding:22px;border-radius:14px;background:var(--panel);border:1px solid var(--line);box-shadow:var(--lift);color:var(--soft);font-size:16px;counter-increment:s}
+.steps li::before{content:counter(s);display:block;margin-bottom:10px;font:900 34px/1 var(--f-num);color:var(--text)}
+.steps strong{color:var(--text)}
+
+.built{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:40px}
+.built dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:10px 20px;font-size:16px}
+.built dt{color:var(--muted);font-weight:600}
+.built dd{margin:0;color:var(--soft)}
+.tree{margin:0;padding:20px;border-radius:14px;background:var(--panel);border:1px solid var(--line);color:var(--soft);font:500 14px/1.7 ui-monospace,"Cascadia Mono",Consolas,monospace;overflow-x:auto}
+.tree b{color:var(--text);font-weight:700}
+
+.end{margin-top:120px;padding-block:72px;border-top:1px solid var(--line)}
+.end h2{max-width:760px}
+footer{padding-block:28px 40px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+footer p{margin:6px 0 0}
+
+@media (max-width:900px){
+  .decision{grid-template-columns:1fr;gap:16px}
+  .num{font-size:44px}
+  .steps,.built{grid-template-columns:1fr}
+  .built{gap:28px}
+}
+@media (max-width:640px){
+  body{font-size:17px}
+  .top nav{gap:16px}
+  .top nav .opt{display:none}
+  .hero{padding-block:36px 24px}
+  .facts{grid-template-columns:1fr 1fr}
+  .fact:nth-child(3){padding-left:0;border-left:0}
+  .fact:nth-child(n+3){border-top:1px solid var(--line)}
+  .btn{flex:1 1 100%}
+  section{padding-block:72px 0}
+  .shot{margin-top:40px;border-radius:12px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="wrap top">
+  <a class="name" href="./">RoboSoccer Scorer</a>
+  <nav aria-label="Page">
+    <a class="opt" href="#decisions">How it works</a>
+    <a class="opt" href="#built">Code</a>
+    <a href="https://github.com/Ari191210/robosoccer-scorer">GitHub</a>
+  </nav>
+</header>
+
+<main>
+<div class="wrap hero">
+  <p class="eyebrow"><i aria-hidden="true"></i>Used live at Robotics at Exun 2026</p>
+  <h1>RoboSoccer<br>Scorer</h1>
+  <p class="lede">I was the event in-charge for <strong>RoboSoccer at Robotics at Exun 2026</strong>, held at DPS R.K. Puram on 31 October. I built this to run the whole knockout tournament: the scoreboard, the clock, the draw and the bracket. It ran on a laptop mirrored to the hall projector.</p>
+  <div class="ctas">
+    <a class="btn main" href="scorer/?demo">Try the live demo</a>
+    <a class="btn" href="https://github.com/Ari191210/robosoccer-scorer">Read the code</a>
+  </div>
+  <p class="hint">The demo opens a sample tournament partway through a quarter-final. Nothing you do is saved.</p>
+
+  <figure class="shot" style="margin-inline:0">
+    <img src="img/match.png" width="2400" height="1350" alt="The match screen: Voltrix 1, Gear Grinders 1, 1:24 left in the first half of a quarter-final, with the next match and tournament records underneath.">
+  </figure>
+  <p class="cap">The match screen, shown with sample teams: score, clock, one button for whatever happens next, who plays after, and records as they fall.</p>
+
+  <div class="facts">
+    <div class="fact"><b>2&ndash;32</b><span>teams per knockout, byes placed automatically</span></div>
+    <div class="fact"><b>260&nbsp;KB</b><span>the whole app in one HTML file, fonts included</span></div>
+    <div class="fact"><b>0</b><span>runtime dependencies or servers</span></div>
+    <div class="fact"><b>23</b><span>automated tests on the rules, draw and replays</span></div>
+  </div>
+</div>
+
+<section class="wrap" aria-labelledby="why">
+  <div class="narrow body">
+    <p class="label">The brief</p>
+    <h2 id="why">A tournament run in front of everyone</h2>
+    <p>Robot football at a school event is loud and fast. Matches are a few minutes long, one after another, with teams waiting their turn and everyone watching the projector. Whoever runs the laptop is also watching the pitch, so the software has to be hard to get wrong.</p>
+    <p>A spreadsheet and a phone timer could keep score. They could not settle the things that actually cause arguments on the day: <strong>was the draw fair, what happens after a wrong tap, and what if the Wi-Fi drops</strong>. Each of those became a design decision.</p>
+  </div>
+</section>
+
+<section class="wrap" id="decisions" aria-labelledby="dec">
+  <p class="label">Three design decisions</p>
+  <h2 id="dec">What makes it work</h2>
+
+  <article class="decision">
+    <div class="num" aria-hidden="true">01</div>
+    <div class="body">
+      <h3>Anyone can check the draw</h3>
+      <p>Every bracket comes from just two inputs: the team names and a 12-character <strong>draw code</strong> printed on the bracket. The names are sorted, hashed with the code to seed a small deterministic random generator, and shuffled with Fisher&ndash;Yates using rejection sampling so no team is favoured.</p>
+      <p>Same names and code, same bracket, in any browser or in Node. Anyone can rerun it afterwards with <span class="mono">npm run verify</span>. Redraws are counted on screen, so an organiser redrawing until they like the result would be visible to the whole room.</p>
+    </div>
+    <div class="demo">
+      <div class="k">Draw code</div>
+      <p style="margin:10px 0 18px"><span class="mono code">K7QM-2XRA-9DPF</span></p>
+      <div class="k">+ these 10 names, always gives</div>
+      <p class="mono" style="margin:10px 0 0;color:var(--soft)">M1 Robo Rangers v Mech Mavericks<br>M2 Kinetic v Team Titans<br>6 byes, spread over the bracket</p>
+    </div>
+  </article>
+
+  <article class="decision">
+    <div class="num" aria-hidden="true">02</div>
+    <div class="body">
+      <h3>Every tap is an event</h3>
+      <p>The app never stores the score. It stores a list of timestamped events (start, goal, pause, time up, winner) and rebuilds the whole tournament by replaying them. That one choice gives <strong>undo for any action</strong>, not just the last goal.</p>
+      <p>It also makes the app <strong>refresh-safe</strong>: close the tab mid-match and it comes back with the same score and the clock still running, because the clock is worked out from timestamps. A backup is just the event list, so another laptop can take over exactly where the first one stopped.</p>
+    </div>
+    <div class="demo">
+      <div class="k">Event log, example</div>
+      <ol class="mono" style="margin-top:12px">
+        <li><time>0:00</time><span>start</span></li>
+        <li><time>0:40</time><span>goal &middot; White</span></li>
+        <li class="undo"><time>0:52</time><span>goal &middot; White</span></li>
+        <li><time>1:11</time><span>goal &middot; Black</span></li>
+        <li><time>3:00</time><span>timeUp &middot; written by the clock</span></li>
+      </ol>
+    </div>
+  </article>
+
+  <article class="decision">
+    <div class="num" aria-hidden="true">03</div>
+    <div class="body">
+      <h3>One file, no internet</h3>
+      <p>School Wi-Fi in a hall full of robots and phones cannot be trusted. The build step inlines the code, styles, fonts and logo into a single HTML file that runs from a USB stick with nothing installed.</p>
+      <p>The live site serves that same file, so it is also the offline copy. <a href="robosoccer.html" download>Download it here</a> and it works with the network unplugged.</p>
+    </div>
+    <div class="demo">
+      <div class="k">dist/robosoccer.html</div>
+      <div class="size" style="margin-top:10px">260&nbsp;KB</div>
+      <p style="margin:6px 0 0;color:var(--muted);font-size:15px">Code, styles, two typefaces and the club logo. No network requests.</p>
+    </div>
+  </article>
+</section>
+
+<section class="wrap" aria-labelledby="day">
+  <p class="label">On the day</p>
+  <h2 id="day">How it ran in the hall</h2>
+  <figure class="shot wide" style="margin-inline:0">
+    <img src="img/fixtures.png" width="2400" height="1350" loading="lazy" alt="The knockout bracket for 10 teams with draw code K7QM-2XRA-9DPF, results filled in for the first three matches and match 4 marked live.">
+  </figure>
+  <p class="cap">The bracket fills itself in as matches finish. Winners move on without anyone touching it.</p>
+  <ol class="steps">
+    <li><strong>Make the draw.</strong> Paste the team list, press Make fixtures, and the bracket and its draw code go up on the projector.</li>
+    <li><strong>One button runs the match.</strong> It always says what happens next: start, pause, second half, golden goal. Goals are one big tap per side.</li>
+    <li><strong>Save after each round.</strong> One click writes the event log to a file, and results export to CSV.</li>
+  </ol>
+</section>
+
+<section class="wrap" id="built" aria-labelledby="code">
+  <p class="label">Under the hood</p>
+  <h2 id="code">How it is built</h2>
+  <div class="built">
+    <div class="body">
+      <p style="margin-top:0">Plain JavaScript, no framework. The match rules, draw, records and replay are pure modules with no browser code, so they are tested directly in Node. The browser layer only turns state into HTML and taps into events.</p>
+      <dl style="margin-top:28px">
+        <dt>Language</dt><dd>JavaScript (ES modules)</dd>
+        <dt>Build</dt><dd>esbuild, plus a script that inlines everything into one file</dd>
+        <dt>Tests</dt><dd>node:test: the draw, match rules, full tournaments, backups</dd>
+        <dt>Randomness</dt><dd>cyrb128 hash seeding sfc32, Fisher&ndash;Yates shuffle</dd>
+        <dt>Rules</dt><dd>2 &times; 3 min halves (final 2 &times; 4), golden goal, then penalties</dd>
+      </dl>
+    </div>
+<pre class="tree"><b>src/</b>
+  clock.js       clock from timestamps
+  draw.js        draw codes, seeded shuffle, byes
+  match.js       match phases and rules
+  records.js     fastest goal, biggest win
+  tournament.js  applies events; replay
+  store.js       event list, undo, backups
+  main.js        clicks, keys, clock tick
+  <b>ui/</b>            views, sound, confetti
+<b>tools/</b>verify-draw.mjs
+<b>test/</b>           node:test suites</pre>
+  </div>
+</section>
+
+<section class="wrap end" aria-labelledby="try">
+  <h2 id="try">Watch a match play out</h2>
+  <p class="body" style="color:var(--soft);max-width:620px">The demo starts mid-match with the clock running. Score a goal, undo it, finish the half, or open the bracket. It is built for a laptop on a projector, so it is best on a big screen.</p>
+  <div class="ctas">
+    <a class="btn main" href="scorer/?demo">Open the demo</a>
+    <a class="btn" href="scorer/">Run your own tournament</a>
+    <a class="btn" href="robosoccer.html" download>Download offline copy</a>
+  </div>
+</section>
+</main>
+
+<footer class="wrap">
+  <p>Built by <strong style="color:var(--text)">Aryamman Ojha</strong>, event in-charge for RoboSoccer at Robotics at Exun 2026, for RoboKnights, the robotics club of DPS R.K. Puram.</p>
+  <p>Code under the MIT licence. RoboKnights logo belongs to RoboKnights. Fonts: Big Shoulders Display and Barlow (SIL OFL).</p>
+</footer>
+</body>
+</html>
